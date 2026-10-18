@@ -3,23 +3,23 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-#include <list>
+#include <set>
 #include "Goat.h"
 using namespace std;
 
 const int SZ_NAMES = 200, SZ_COLORS = 25, MAX_AGE = 20;
 
-int select_goat(list<Goat> trip);
-void delete_goat(list<Goat> &trip);
-void add_goat(list<Goat> &trip, string [], string []);
-void display_trip(list<Goat> trip);
+int select_goat(set<Goat> trip);
+void delete_goat(set<Goat> &trip);
+void add_goat(set<Goat> &trip, string [], string []);
+void display_trip(set<Goat> trip);
 int main_menu();
 
 int main() {
     srand(time(0));
     bool again;
 
-    list<Goat> trip;
+    set<Goat> trip;
     int choice;
 
     // read & populate arrays for names and colors
@@ -58,7 +58,6 @@ int main() {
         again = (choice != 4);
     } while (again);
 
-
     return 0;
 }
 
@@ -88,25 +87,31 @@ int main_menu() {
 }
 
 // creates a random Goat and adds it to the trip
-// arguments: Goat list, names array, colors array
+// arguments: Goat set, names array, colors array
 // returns: none
-void add_goat(list<Goat> &trip, string names[], string colors[]) {
+void add_goat(set<Goat> &trip, string names[], string colors[]) {
     string name = names[rand() % SZ_NAMES];
     string color = colors[rand() % SZ_COLORS];
     int age = rand() % (MAX_AGE + 1);
 
     Goat newGoat(name, age, color);
 
-    trip.push_back(newGoat);
+    pair<set<Goat>::iterator, bool> result = trip.insert(newGoat);
 
-    cout << "Goat added: " << name << " ("
-         << age << ", " << color << ")" << endl;
+    if (result.second) {
+        cout << "Goat added: " << name << " ("
+             << age << ", " << color << ")" << endl;
+    }
+    else {
+        cout << "Goat " << name
+             << " already exists in the trip." << endl;
+    }
 }
 
 // asks the user to select a valid goat number
 // arguments: number of goats in the trip
 // returns: the selected goat number
-int select_goat(list<Goat> trip) {
+int select_goat(set<Goat> trip) {
     int choice;
     int size = trip.size();
 
@@ -128,7 +133,7 @@ int select_goat(list<Goat> trip) {
 // deletes the goat selected by the user
 // arguments: Goat list passed by reference
 // returns: none
-void delete_goat(list<Goat> &trip) {
+void delete_goat(set<Goat> &trip) {
     if (trip.empty()) {
         cout << "The trip is empty." << endl;
         return;
@@ -154,7 +159,7 @@ void delete_goat(list<Goat> &trip) {
 // displays all goats in the trip with their numbers
 // arguments: Goat list
 // returns: none
-void display_trip(list<Goat> trip) {
+void display_trip(set<Goat> trip) {
     if (trip.empty()) {
         cout << "The trip is empty." << endl;
         return;
